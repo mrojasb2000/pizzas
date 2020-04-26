@@ -5,20 +5,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/mrojasb2000/pizzas/api/models"
 )
 
-type pizzas []Pizza
+type Pizzas []models.Pizza
 
-func (ps Pizzas) FindByID(ID int) (Pizza, error) {
+func (ps Pizzas) FindByID(ID int) (models.Pizza, error) {
 	for _, pizza := range ps {
 		if pizza.ID == ID {
 			return pizza, nil
 		}
 	}
-	return Pizza{}, fmt.Errorf("Couldn't find pizza with ID: %d", ID)
+	return models.Pizza{}, fmt.Errorf("Couldn't find pizza with ID: %d", ID)
 }
 
-type Orders []Order
+type Orders []models.Order
 
 type pizzasHandler struct {
 	pizzas *Pizzas
@@ -49,7 +51,7 @@ func (oh ordersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		var o Order
+		var o models.Order
 
 		if len(*oh.pizzas) == 0 {
 			http.Error(w, "Error: No pizzas found", http.StatusNotFound)
@@ -81,17 +83,17 @@ func (oh ordersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	var orders Orders
 	pizzas := Pizzas{
-		Pizza{
+		models.Pizza{
 			ID:    1,
 			Name:  "Pepperoni",
 			Price: 12,
 		},
-		Pizza{
+		models.Pizza{
 			ID:    2,
 			Name:  "Capricciosa",
 			Price: 11,
 		},
-		Pizza{
+		models.Pizza{
 			ID:    3,
 			Name:  "Margherita",
 			Price: 10,
@@ -102,5 +104,5 @@ func main() {
 	mux.Handle("/pizzas", pizzasHandler{&pizzas})
 	mux.Handle("/orders", ordersHandler{&pizzas, &orders})
 
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Fatal(http.ListenAndServe(":9090", mux))
 }
